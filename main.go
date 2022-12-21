@@ -54,13 +54,7 @@ func main() {
 	app := fiber.New()
 	app.Use(logger.New(loggerConfig))
 	app.Get("/", func(c *fiber.Ctx) error {
-		//return c.SendString("Page not found or wrong HTTP request method is used A")
-		resp, e := chargeAPI(url, server_key, c.Body())
-		if e != nil {
-			return c.SendString(e.Error())
-		}
-
-		return c.Send(resp.Body())
+		return c.SendString("Page not found or wrong HTTP request method is used A")
 	})
 	app.Post("/", func(c *fiber.Ctx) error {
 		resp, e := chargeAPI(url, server_key, c.Body())
