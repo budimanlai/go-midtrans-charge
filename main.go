@@ -48,14 +48,14 @@ func main() {
 	// Set config for logger
 	loggerConfig := logger.Config{
 		// Output: file, // add file to save output
-		Format: "[${ip} - ${time}] ${status} - ${latency} ${method} ${path}\n${body}\n\n ${resBody}",
+		Format: "[${ip} - ${time}] ${status} - ${latency} ${method} ${path}\n${body}\n${resBody}\n",
 	}
 
 	app := fiber.New()
 	app.Use(logger.New(loggerConfig))
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Page not found or wrong HTTP request method is used A")
-	})
+	// app.Get("/", func(c *fiber.Ctx) error {
+	// 	return c.SendString("Page not found or wrong HTTP request method is used A")
+	// })
 	app.Post("/", func(c *fiber.Ctx) error {
 		resp, e := chargeAPI(url, server_key, c.Body())
 		if e != nil {
