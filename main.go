@@ -1,6 +1,8 @@
 package main
 
 import (
+	"log"
+	"os"
 	"time"
 
 	"encoding/base64"
@@ -8,6 +10,7 @@ import (
 	goargs "github.com/budimanlai/go-args"
 	goconfig "github.com/budimanlai/go-config"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/valyala/fasthttp"
 )
 
@@ -36,9 +39,28 @@ func main() {
 		panic("Invalid mode. Must be sandbox or production")
 	}
 
+	file, err := os.OpenFile("runtime/logs/midtrans-charge.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("error opening file: %v", err)
+	}
+	defer file.Close()
+
+	// Set config for logger
+	loggerConfig := logger.Config{
+		// Output: file, // add file to save output
+		Format: "[${ip} - ${time}] ${status} - ${latency} ${method} ${path}\n${body}\n\n ${resBody}",
+	}
+
 	app := fiber.New()
+	app.Use(logger.New(loggerConfig))
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Page not found or wrong HTTP request method is used A")
+		//return c.SendString("Page not found or wrong HTTP request method is used A")
+		resp, e := chargeAPI(url, server_key, c.Body())
+		if e != nil {
+			return c.SendString(e.Error())
+		}
+
+		return c.Send(resp.Body())
 	})
 	app.Post("/", func(c *fiber.Ctx) error {
 		resp, e := chargeAPI(url, server_key, c.Body())

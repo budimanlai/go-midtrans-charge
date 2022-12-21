@@ -1,6 +1,6 @@
 #!/bin/bash
 
-APP="app"
+APP="midtrans_charge"
 REMOTEDIR="/home/apps/myapp"
 LOGIN="dev@localhost"
 PORT="22"
